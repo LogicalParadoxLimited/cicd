@@ -6,21 +6,21 @@ jobs:
   get-variants:
     runs-on: ubuntu-latest
     steps:
-      - run: pwd
+      - uses: actions/checkout@v2
       - name: Load dynamic-jobs properties file
         run: cat dynamic-jobs.properties >> $GITHUB_ENV
-      - run: echo $variants | jq -c --raw-input 'split(",")'
-      # - id: get-variants
-      #   run: echo '::set-output name=variants::$(echo $variants | jq -c --raw-input \'split(",")\')'
-  #   outputs:
-  #     variants: ${{ steps.get-variants.outputs.variants }}
+      - run: env | sort
+      - run: echo $job1_variants | jq -c --raw-input 'split(",")'
+      - id: get-variants
+        run: echo "::set-output name=variants::$(echo $job1_variants | jq -c --raw-input 'split(",")')"
+    outputs:
+      variants: ${{ steps.get-variants.outputs.variants }}
 
-
-  # job-with-variants:
-  #   runs-on: ubuntu-latest
-  #   needs: get-variants
-  #   strategy:
-  #     matrix:
-  #       variant: ${{fromJSON(needs.get-variants.outputs.variants)}}
-  #   steps:
-  #     - run: echo "Running job with variant ${{ matrix.variant }}"
+  job1-with-variants:
+    runs-on: ubuntu-latest
+    needs: get-variants
+    strategy:
+      matrix:
+        variant: ${{fromJSON(needs.get-variants.outputs.variants)}}
+    steps:
+      - run: echo "Running job with variant ${{ matrix.variant }}"
