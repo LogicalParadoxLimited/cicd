@@ -9,10 +9,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Load dynamic-jobs properties file
         run: cat dynamic-jobs.properties >> $GITHUB_ENV
-      - run: env | sort
-      - run: echo $job1_variants | jq -c --raw-input 'split(",")'
+      - run: echo ${{ env.job1-variants }} | jq -c --raw-input 'split(",")'
       - id: get-variants
-        run: echo "::set-output name=variants::$(echo $job1_variants | jq -c --raw-input 'split(",")')"
+        run: echo "::set-output name=variants::$(echo ${{ env.job1-variants }} | jq -c --raw-input 'split(",")')"
     outputs:
       variants: ${{ steps.get-variants.outputs.variants }}
 
